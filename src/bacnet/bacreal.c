@@ -50,6 +50,17 @@
 #error Define BIG_ENDIAN=0 or BIG_ENDIAN=1 for BACnet Stack in compiler settings
 #endif
 
+/**
+ * @brief Clause 20.2.6 Encoding of a Real Number Value
+ */
+int bacnet_real_length(
+    float value)
+{
+    (void)value;
+
+    return 4;
+}
+
 /* from clause 20.2.6 Encoding of a Real Number Value */
 /* returns the number of apdu bytes consumed */
 int decode_real(uint8_t *apdu, float *real_value)
@@ -128,6 +139,16 @@ int encode_bacnet_real(float value, uint8_t *apdu)
 }
 
 #if BACNET_USE_DOUBLE
+/**
+ * @brief Clause 20.2.6 Encoding of a Real Number Value
+ */
+int bacnet_double_length(
+    double value)
+{
+    (void)value;
+
+    return 8;
+}
 
 /* from clause 20.2.7 Encoding of a Double Precision Real Number Value */
 /* returns the number of apdu bytes consumed */
