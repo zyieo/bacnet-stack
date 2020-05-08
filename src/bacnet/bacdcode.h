@@ -48,6 +48,14 @@ extern "C" {
         bool context_specific,
         uint32_t len_value_type);
 
+    BACNET_STACK_EXPORT
+    int bacnet_tag_encode(
+        uint8_t *apdu,
+        uint16_t apdu_len_max,
+        uint8_t tag_number,
+        bool context_specific,
+        uint32_t len_value_type);
+
 /* from clause 20.2.1.3.2 Constructed Data */
 /* returns the number of apdu bytes consumed */
     BACNET_STACK_EXPORT
@@ -119,6 +127,11 @@ extern "C" {
         uint8_t * apdu,
         uint8_t tag_number);
 
+    BACNET_STACK_EXPORT
+    int bacnet_null_application_encode(
+        uint8_t *apdu,
+        uint16_t apdu_len_max);
+
 /* from clause 20.2.3 Encoding of a Boolean Value */
     BACNET_STACK_EXPORT
     int encode_application_boolean(
@@ -181,6 +194,10 @@ extern "C" {
     int encode_context_real(
         uint8_t * apdu,
         uint8_t tag_number,
+        float value);
+    int bacnet_real_application_encode(
+        uint8_t *apdu,
+        uint16_t apdu_len_max,
         float value);
 
 /* from clause 20.2.7 Encoding of a Double Precision Real Number Value */
