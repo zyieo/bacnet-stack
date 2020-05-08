@@ -282,12 +282,14 @@ int Analog_Output_Read_Property(BACNET_READ_PROPERTY_DATA *rpdata)
     unsigned i = 0;
     bool state = false;
     uint8_t *apdu = NULL;
+    size_t apdu_size = 0;
 
     if ((rpdata == NULL) || (rpdata->application_data == NULL) ||
         (rpdata->application_data_len == 0)) {
         return 0;
     }
     apdu = rpdata->application_data;
+    apdu_size = rpdata->application_data_len;
     switch (rpdata->object_property) {
         case PROP_OBJECT_IDENTIFIER:
             apdu_len = encode_application_object_id(
@@ -338,23 +340,22 @@ int Analog_Output_Read_Property(BACNET_READ_PROPERTY_DATA *rpdata)
                 object_index =
                     Analog_Output_Instance_To_Index(rpdata->object_instance);
                 for (i = 0; i < BACNET_MAX_PRIORITY; i++) {
-                    /* FIXME: check if we have room before adding it to APDU */
                     if (Analog_Output_Level[object_index][i] == AO_LEVEL_NULL) {
-                        len = encode_application_null(&apdu[apdu_len]);
+                        len = bacnet_null_application_encode(&apdu[apdu_len],
+                            apdu_size-apdu_len);
+
                     } else {
                         real_value = Analog_Output_Level[object_index][i];
-                        len = encode_application_real(
-                            &apdu[apdu_len], real_value);
+                        len = bacnet_real_application_encode(
+                            &apdu[apdu_len], apdu_size-apdu_len, real_value);
                     }
-                    /* add it if we have room */
-                    if ((apdu_len + len) < MAX_APDU) {
-                        apdu_len += len;
-                    } else {
+                    if (len == 0) {
                         rpdata->error_code =
                             ERROR_CODE_ABORT_SEGMENTATION_NOT_SUPPORTED;
                         apdu_len = BACNET_STATUS_ABORT;
                         break;
                     }
+                    apdu_len += len;
                 }
             } else {
                 object_index =
